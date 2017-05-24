@@ -17,20 +17,37 @@ class Atom{
   }
   
   void update(){
+    updateGraphics();
     updatePhysics();
     checkEdges();
-    updateGraphics();
     
   }
   
   void updatePhysics(){
+    acc.limit(2);
     velocity.add(acc);
     position.add(velocity);
     acc = new PVector(0, 0);
   }
   
   void updateGraphics(){
-    rect(position.x, position.y, displaySize, displaySize);
+    drawForce();
+    fill(255);
+    noStroke();
+    ellipse(position.x, position.y, displaySize, displaySize);
+  }
+  
+  void drawForce(){
+    pushMatrix();
+    translate(position.x, position.y);
+    stroke((255+50)/2,(111+50)/2,0);
+    strokeWeight(1.5);
+    PVector a = acc.copy();
+    PVector drawVector = a;
+    drawVector.mult(40000);
+    drawVector.limit(100);
+    line(0,0,drawVector.x,drawVector.y);
+    popMatrix();
   }
   
   void applyForce(PVector force){
