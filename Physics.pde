@@ -1,6 +1,9 @@
 class Physics{
   
   float forceMultiplier;
+  float maxProximity = 6;
+  float targetSimulationSpeed = 60;
+  float deltaTime = 1;
   
   Physics(float _forceMultiplier){
     forceMultiplier = _forceMultiplier;
@@ -33,25 +36,32 @@ class Physics{
   //  }
   //}
   
+  void updateDeltaTime(){
+    deltaTime = targetSimulationSpeed / frameRate;
+  }
+  
   void update(ArrayList<Atom> atoms){
+    updateDeltaTime();
     for(int i = 0; i < atoms.size(); i++){
-      atoms.get(i).update();
+      atoms.get(i).update(deltaTime);  
     }
     universalgravity();
+    text("FPS "+round(frameRate),5, 20);
   }
   
   void universalgravity(){
     for(int i = 0; i < atoms.size(); i++){
       for(int j = 0; j < atoms.size(); j++){
-      if(i!=j){
+      if(getDistance(atoms.get(i).position, atoms.get(j).position) > maxProximity){
         PVector a1 = atoms.get(i).position.copy();
         PVector a2 = atoms.get(j).position.copy();
         float d = getDistance(a1, a2);
         PVector f = a2.sub(a1);
+        float m2 = atoms.get(j).mass;
         f.normalize();
         f.mult(forceMultiplier/(d*d));
         f.limit(2);
-        atoms.get(i).applyForce(f);
+        atoms.get(i).applyForce(PVector.mult(f, m2));
         }
       }
     }
